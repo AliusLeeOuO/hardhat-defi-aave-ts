@@ -36,6 +36,9 @@ async function main() {
     amountDaiToBorrowWei,
     deployer
   )
+  // 还钱！
+  await repay(amountDaiToBorrowWei, lendingPool, lendingPoolAddress, deployer)
+  await getBorrowUserData(lendingPool, deployer)
 }
 
 async function getLendingPool() {
@@ -91,6 +94,18 @@ async function borrowDai(
   const borrowTx = await lendingPool.borrow(daiAddress, amountDaiToBorrowWei, 2, 0, account)
   await borrowTx.wait(1)
   console.log("借款成功")
+}
+
+async function repay(
+  amount: any,
+  lendingPool: ILendingPool,
+  lendingPoolAddress: string,
+  account: string
+) {
+  await approveERC20("0x6B175474E89094C44Da98b954EedeAC495271d0F", lendingPoolAddress, amount)
+  const repayTx = await lendingPool.repay("0x6B175474E89094C44Da98b954EedeAC495271d0F", amount, 2, account)
+  await repayTx.wait(1)
+  console.log("还款成功")
 }
 
 main()
